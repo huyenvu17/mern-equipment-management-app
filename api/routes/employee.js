@@ -27,6 +27,45 @@ router.put("/:id", verify, async (req, res) => {
   }
 });
 
-// GET
+// DELETE
+router.delete("/:id", verify, async (req, res) => {
+  if (req.user.id === req.params.id || req.user.isAdmin) {
+    try {
+      const deletedEmployee = await Employee.findByIdAndDelete(req.params.id);
+      res.status(200).json(deletedEmployee);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  } else {
+    res.status(403).json("You are not allowed to delete employee!");
+  }
+});
+
+// GET ALL
+router.get("/", verify, async (req, res) => {
+  const query = req.query.new;
+  if (req.user.isAdmin) {
+    try {
+      const users = query
+        ? await Employee.find().limit(10)
+        : await Employee.find();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  } else {
+    res.status(403).json("You are not allowed to view employees!");
+  }
+});
+
+// GET ONE
+router.get("/:id", async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    res.status(200).json(employee);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 
 module.exports = router;

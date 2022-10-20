@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Equipment = require("../models/Equipment");
-const verify = require("../verifyToken");
+const verify = require("../utils/verifyToken");
 
 // GET ALL
 router.get("/", verify, async (req, res) => {
@@ -12,7 +12,7 @@ router.get("/", verify, async (req, res) => {
 // GET ONE
 router.get("/:id", async (req, res) => {
   try {
-    const equipment = Equipment.findById(req.params.id);
+    const equipment = await Equipment.findById(req.params.id);
     res.status(200).json(equipment);
   } catch (error) {
     res.status(500).json(error);

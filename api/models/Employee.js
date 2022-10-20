@@ -6,6 +6,10 @@ const EmployeeSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
+    equipId: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Equipment"
+    }]
   },
   { timestamps: true }
 );

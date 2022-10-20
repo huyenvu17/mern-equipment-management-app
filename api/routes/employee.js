@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Employee = require("../models/Employee");
-const verify = require("../verifyToken");
+const verify = require("../utils/verifyToken");
 const CryptoJS = require("crypto-js");
 
 // UPDATE

@@ -1,129 +1,197 @@
-import React from "react"
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted"
-import EditIcon from "@mui/icons-material/Edit"
-import DeleteIcon from "@mui/icons-material/Delete"
-import FlagIcon from "@mui/icons-material/Flag"
-import SettingsIcon from "@mui/icons-material/Settings"
-import { Link } from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import MaterialTable from "material-table";
+import axios from "axios";
+import { Alert, AlertTitle } from "@material-ui/lab";
 
-export default function Equipments() {
-  const listItems = [
-    { id: 1, name: "List Group item 1" },
-    { id: 2, name: "List Group item 2" },
-    { id: 3, name: "List Group item 3" },
-    { id: 4, name: "List Group item 4" },
-    { id: 5, name: "List Group item 5" },
-    { id: 6, name: "List Group item 6" },
-  ]
-  const user = true;
+// regex for email validation
+const validateEmail = (email) => {
+  const re =
+    /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
+  return re.test(String(email).toLowerCase());
+};
+
+const Equipments = () => {
+  const [user, setUser] = useState([]);
+  const [iserror, setIserror] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+
+  let columns = [
+    { title: "NAME", field: "name" },
+    { title: "USERNAME", field: "username" },
+    { title: "EMAIL", field: "email" },
+    { title: "PHONE", field: "phone" },
+    { title: "WEBSITE", field: "website" },
+  ];
+
+  let data = [
+    {
+      name: "manish",
+      username: "traptrick",
+      email: "themk85@gmail.com",
+      phone: "9999999999",
+      website: "https://github.com/traptrick",
+    },
+  ];
+
+  useEffect(() => {
+    axios.get(`https://jsonplaceholder.typicode.com/users`).then((res) => {
+      const users = res.data;
+      setUser(users);
+      console.log(users);
+    });
+  }, []);
+
+  //function for updating the existing row details
+  const handleRowUpdate = (newData, oldData, resolve) => {
+    //validating the data inputs
+    let errorList = [];
+    if (newData.name === "") {
+      errorList.push("Try Again, You didn't enter the name field");
+    }
+    if (newData.username === "") {
+      errorList.push("Try Again, You didn't enter the Username field");
+    }
+    if (newData.email === "" || validateEmail(newData.email) === false) {
+      errorList.push("Oops!!! Please enter a valid email");
+    }
+    if (newData.phone === "") {
+      errorList.push("Try Again, Phone number field can't be blank");
+    }
+    if (newData.website === "") {
+      errorList.push("Try Again, Enter website url before submitting");
+    }
+
+    if (errorList.length < 1) {
+      axios
+        .put(
+          `https://jsonplaceholder.typicode.com/users/${newData.id}`,
+          newData
+        )
+        .then((response) => {
+          const updateUser = [...user];
+          const index = oldData.tableData.id;
+          updateUser[index] = newData;
+          setUser([...updateUser]);
+          resolve();
+          setIserror(false);
+          setErrorMessages([]);
+        })
+        .catch((error) => {
+          setErrorMessages(["Update failed! Server error"]);
+          setIserror(true);
+          resolve();
+        });
+    } else {
+      setErrorMessages(errorList);
+      setIserror(true);
+      resolve();
+    }
+  };
+
+  //function for deleting a row
+  const handleRowDelete = (oldData, resolve) => {
+    axios
+      .delete(`https://jsonplaceholder.typicode.com/users/${oldData.id}`)
+      .then((response) => {
+        const dataDelete = [...user];
+        const index = oldData.tableData.id;
+        dataDelete.splice(index, 1);
+        setUser([...dataDelete]);
+        resolve();
+      })
+      .catch((error) => {
+        setErrorMessages(["Delete failed! Server error"]);
+        setIserror(true);
+        resolve();
+      });
+  };
+
+  //function for adding a new row to the table
+  const handleRowAdd = (newData, resolve) => {
+    //validating the data inputs
+    let errorList = [];
+    if (newData.name === "") {
+      errorList.push("Try Again, You didn't enter the name field");
+    }
+    if (newData.username === "") {
+      errorList.push("Try Again, You didn't enter the Username field");
+    }
+    if (newData.email === "" || validateEmail(newData.email) === false) {
+      errorList.push("Oops!!! Please enter a valid email");
+    }
+    if (newData.phone === "") {
+      errorList.push("Try Again, Phone number field can't be blank");
+    }
+    if (newData.website === "") {
+      errorList.push("Try Again, Enter website url before submitting");
+    }
+
+    if (errorList.length < 1) {
+      axios
+        .post(`https://jsonplaceholder.typicode.com/users`, newData)
+        .then((response) => {
+          let newUserdata = [...user];
+          newUserdata.push(newData);
+          setUser(newUserdata);
+          resolve();
+          setErrorMessages([]);
+          setIserror(false);
+        })
+        .catch((error) => {
+          setErrorMessages(["Cannot add data. Server error!"]);
+          setIserror(true);
+          resolve();
+        });
+    } else {
+      setErrorMessages(errorList);
+      setIserror(true);
+      resolve();
+    }
+  };
+
   return (
-    <div className="container list mt-5">
-      <h2 className="text-center my-4">List</h2>
-      <div className="list-header p-3 d-flex justify-content-between align-items-center">
-        <div>
-          <FormatListBulletedIcon className="p-0" />
-          <span>Sortable List</span>
-        </div>
-        <div className="dropdown">
-          <button
-            className="btn btn-secondary dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <SettingsIcon />
-          </button>
-          <ul className="dropdown-menu">
-            <li>
-              <a className="dropdown-item" href="#">
-                Action
-              </a>
-            </li>
-            <li>
-              <a className="dropdown-item" href="#">
-                Another action
-              </a>
-            </li>
-            <li>
-              <a className="dropdown-item" href="#">
-                Something else here
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <table className="table">
-        <tbody>
-          {listItems?.map((item) => (
-            <tr key={item?.id}>
-              <td>{item.name}</td>
-              <td className="text-end">
-                <span
-                  className="btn-item-edit"
-                  onClick={() => {
-                    console.log("")
-                  }}
-                >
-                  <EditIcon />
-                </span>
-                <span
-                  className="btn-item-delete"
-                  onClick={() => {
-                    console.log("")
-                  }}
-                >
-                  <DeleteIcon />
-                </span>
-                <span
-                  className="btn-item-flag"
-                  onClick={() => {
-                    console.log("")
-                  }}
-                >
-                  <FlagIcon />
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="d-flex justify-content-between align-items-center list-pagination">
-        <div>
-          Total Counts <span className="badge bg-secondary">4</span>
-        </div>
-        <nav aria-label="Page navigation example">
-          <ul className="pagination">
-            <li className="page-item">
-              <a className="page-link" href="#">
-                Previous
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                1
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                2
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                3
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                Next
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
+    <div className="app">
+      <h1>Material Table Example Using JSONPlaceholder API</h1> <br />
+      <br />
+      <MaterialTable
+        title="User Details"
+        columns={columns}
+        data={user}
+        options={{
+          headerStyle: {
+            borderBottomColor: "red",
+            borderBottomWidth: "3px",
+            fontFamily: "verdana",
+          },
+          actionsColumnIndex: -1,
+        }}
+        editable={{
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve) => {
+              handleRowUpdate(newData, oldData, resolve);
+            }),
+          onRowAdd: (newData) =>
+            new Promise((resolve) => {
+              handleRowAdd(newData, resolve);
+            }),
+          onRowDelete: (oldData) =>
+            new Promise((resolve) => {
+              handleRowDelete(oldData, resolve);
+            }),
+        }}
+      />
       <div>
-        <Link to="/pricing">Pricing</Link>
+        {iserror && (
+          <Alert severity="error">
+            <AlertTitle>ERROR</AlertTitle>
+            {errorMessages.map((msg, i) => {
+              return <div key={i}>{msg}</div>;
+            })}
+          </Alert>
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default Equipments;

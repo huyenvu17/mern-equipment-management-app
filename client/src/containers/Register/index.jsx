@@ -1,10 +1,10 @@
-import React from "react"
-import PersonIcon from "@mui/icons-material/Person"
-import EmailIcon from "@mui/icons-material/Email"
-import SaveIcon from "@mui/icons-material/Save"
-import FacebookIcon from "@mui/icons-material/Facebook"
-import GoogleIcon from "@mui/icons-material/Google"
-import LockIcon from "@mui/icons-material/Lock"
+import React from "react";
+import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
+import SaveIcon from "@mui/icons-material/Save";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GoogleIcon from "@mui/icons-material/Google";
+import LockIcon from "@mui/icons-material/Lock";
 
 export default function Register() {
   return (
@@ -63,7 +63,11 @@ export default function Register() {
         <div className="col-12">
           <div className="d-flex justify-content-between align-items-center">
             <div className="form-check">
-              <input className="form-check-input" type="checkbox" id="inlineFormCheck" />
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="inlineFormCheck"
+              />
               <span className="form-check-label">
                 I agree to the <a>term</a>
               </span>
@@ -80,12 +84,15 @@ export default function Register() {
             <FacebookIcon />
             Sign up using Facebook
           </button>
-          <button type="submit" className="btn btn-primary signup-btn-google mx-2">
+          <button
+            type="submit"
+            className="btn btn-primary signup-btn-google mx-2"
+          >
             <GoogleIcon />
             Sign up using Google+
           </button>
         </div>
       </form>
     </div>
-  )
+  );
 }

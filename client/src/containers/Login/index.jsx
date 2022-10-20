@@ -67,8 +67,8 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             LOGIN
           </Typography>
-          <form onSubmit={handleSubmit(onSubmit)} width="50%">
-            <Box my={3}>
+          <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
+            <Box my={3} minWidth="100%">
               <Controller
                 control={control}
                 name="email"
@@ -89,7 +89,7 @@ export default function Login() {
                 )}
               />
             </Box>
-            <Box my={3}>
+            <Box my={3} minWidth="100%">
               <Controller
                 control={control}
                 name="password"

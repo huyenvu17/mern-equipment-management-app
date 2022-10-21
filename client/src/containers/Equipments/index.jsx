@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import axios from "axios";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { Container, createTheme, ThemeProvider } from "@mui/material";
 
 // regex for email validation
 const validateEmail = (email) => {
@@ -14,7 +15,7 @@ const Equipments = () => {
   const [user, setUser] = useState([]);
   const [iserror, setIserror] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
-
+  const defaultMaterialTheme = createTheme();
   let columns = [
     { title: "NAME", field: "name" },
     { title: "USERNAME", field: "username" },
@@ -150,36 +151,36 @@ const Equipments = () => {
   };
 
   return (
-    <div className="app">
-      <h1>Material Table Example Using JSONPlaceholder API</h1> <br />
-      <br />
-      <MaterialTable
-        title="User Details"
-        columns={columns}
-        data={user}
-        options={{
-          headerStyle: {
-            borderBottomColor: "red",
-            borderBottomWidth: "3px",
-            fontFamily: "verdana",
-          },
-          actionsColumnIndex: -1,
-        }}
-        editable={{
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve) => {
-              handleRowUpdate(newData, oldData, resolve);
-            }),
-          onRowAdd: (newData) =>
-            new Promise((resolve) => {
-              handleRowAdd(newData, resolve);
-            }),
-          onRowDelete: (oldData) =>
-            new Promise((resolve) => {
-              handleRowDelete(oldData, resolve);
-            }),
-        }}
-      />
+    <Container>
+      <ThemeProvider theme={defaultMaterialTheme}>
+        <MaterialTable
+          title="Equipments"
+          columns={columns}
+          data={user}
+          options={{
+            headerStyle: {
+              borderBottomColor: "red",
+              borderBottomWidth: "3px",
+              fontFamily: "verdana",
+            },
+            actionsColumnIndex: -1,
+          }}
+          editable={{
+            onRowUpdate: (newData, oldData) =>
+              new Promise((resolve) => {
+                handleRowUpdate(newData, oldData, resolve);
+              }),
+            onRowAdd: (newData) =>
+              new Promise((resolve) => {
+                handleRowAdd(newData, resolve);
+              }),
+            onRowDelete: (oldData) =>
+              new Promise((resolve) => {
+                handleRowDelete(oldData, resolve);
+              }),
+          }}
+        />
+      </ThemeProvider>
       <div>
         {iserror && (
           <Alert severity="error">
@@ -190,7 +191,7 @@ const Equipments = () => {
           </Alert>
         )}
       </div>
-    </div>
+    </Container>
   );
 };
 

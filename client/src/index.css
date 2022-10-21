@@ -11,3 +11,27 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.MuiButton-root.btn-primary{
+  background-color: #ed8a01;
+  font-weight: 600;
+  color: white;
+}
+
+.MuiButton-root.btn-primary:hover{
+  background-color: #e28401
+}
+
+.toggle-buttons > button {
+  color: #5c5c5c8a;
+    width: 50px;
+    padding: 3px;
+    background: #e3e3e3;
+    font-weight: 600;
+}
+
+
+
+.toggle-buttons > button.Mui-selected, .toggle-buttons > button.Mui-selected:hover {
+  color: #fafafa;
+  background-color: rgb(237 138 1);
+}

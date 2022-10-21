@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const appRoute = require("./routes/equipments");
 const authRoute = require("./routes/auth");
-const employeesRoute= require("./routes/employee");
-
+const employeesRoute = require("./routes/employee");
+const cors = require("cors");
 dotenv.config();
 
 mongoose
@@ -19,6 +19,7 @@ mongoose
     console.error(err);
   });
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoute);

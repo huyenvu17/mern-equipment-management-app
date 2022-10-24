@@ -3,6 +3,8 @@ import MaterialTable from "material-table";
 import axios from "axios";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { Container, createTheme, ThemeProvider } from "@mui/material";
+import { API_URL, EQUIPMENTS_PATH, USER } from "../../utils/constants";
+import { getStoredItem } from "../../utils/helper";
 
 // regex for email validation
 const validateEmail = (email) => {
@@ -12,21 +14,21 @@ const validateEmail = (email) => {
 };
 
 const Equipments = () => {
+  const userInfo = JSON.parse(getStoredItem(USER));
   const [user, setUser] = useState([]);
   const [iserror, setIserror] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
   const defaultMaterialTheme = createTheme();
   let columns = [
-    { title: "NAME", field: "name" },
-    { title: "USERNAME", field: "username" },
-    { title: "EMAIL", field: "email" },
-    { title: "PHONE", field: "phone" },
-    { title: "WEBSITE", field: "website" },
+    { title: "TITLE", field: "title" },
+    { title: "TYPE", field: "type" },
+    { title: "DESCRIPTION", field: "desc" },
+    { title: "ACTIVE", field: "isActive" },
   ];
 
   let data = [
     {
-      name: "manish",
+      title: "manish",
       username: "traptrick",
       email: "themk85@gmail.com",
       phone: "9999999999",
@@ -35,11 +37,17 @@ const Equipments = () => {
   ];
 
   useEffect(() => {
-    axios.get(`https://jsonplaceholder.typicode.com/users`).then((res) => {
-      const users = res.data;
-      setUser(users);
-      console.log(users);
-    });
+    axios
+      .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
+        headers: {
+          token: `Bearer ${userInfo?.accessToken}`,
+        },
+      })
+      .then((res) => {
+        const users = res.data;
+        setUser(users);
+        console.log(users);
+      });
   }, []);
 
   //function for updating the existing row details

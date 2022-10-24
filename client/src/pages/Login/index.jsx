@@ -1,17 +1,17 @@
 import React from "react";
+import { Box } from "@mui/material";
+import { Button, TextField } from "@material-ui/core";
+import { Controller, useForm } from "react-hook-form";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
+import axios from "axios";
+import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import { Controller, useForm } from "react-hook-form";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Button, TextField } from "@material-ui/core";
-import { Box } from "@mui/material";
-import axios from "axios";
-import { useState } from "react";
-import { API_URL } from "../../utils/constants";
+import { API_URL, AUTH_TOKEN, USER } from "../../utils/constants";
+import { getAuthToken, setStoredItem } from "../../utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+const Login = () => {
+  const authToken = getAuthToken();
   const classes = useStyles();
-  const [authenticated, setAuthenticated] = useState(false);
   const navigate = useNavigate();
   const myHelper = {
     email: {
@@ -57,20 +57,21 @@ export default function Login() {
   const onSubmit = (data) => {
     console.log(data);
     axios
-      .post(`${API_URL}/api/auth/login`, data)
+      .post(`${API_URL}/auth/login`, data)
       .then((result) => {
         if (result?.status === 200 && result?.data) {
+          console.log(result?.data);
           navigate("/");
-          //setAuthenticated(true);
+          setStoredItem(AUTH_TOKEN, result?.data?.accessToken);
+          setStoredItem(USER, JSON.stringify(result?.data));
         }
-        console.log(result);
       })
       .catch((error) => console.log(error));
   };
 
   return (
     <>
-      {authenticated && <Navigate to="/" replace={true} />}
+      {authToken && <Navigate to="/" replace={true} />}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -112,7 +113,7 @@ export default function Login() {
                 defaultValue=""
                 rules={{
                   required: true,
-                  minLength: 6,
+                  minLength: 4,
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
@@ -146,4 +147,6 @@ export default function Login() {
       </Container>
     </>
   );
-}
+};
+
+export default Login;

@@ -10,3 +10,11 @@ export function isAuthenticated() {
   if (token) return true;
   return false;
 }
+
+export const setStoredItem = (name, value) => {
+  return localStorage.setItem(name, value);
+};
+
+export const getStoredItem = (name) => {
+  return localStorage.getItem(name);
+};

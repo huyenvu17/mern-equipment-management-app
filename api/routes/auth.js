@@ -9,6 +9,7 @@ router.post("/register", async (req, res) => {
     username: req.body.username,
     email: req.body.email,
     isAdmin: req.body.isAdmin,
+    name: req.body.name,
     password: CryptoJS.AES.encrypt(
       req.body.password,
       process.env.SECRET_KEY
@@ -28,7 +29,10 @@ router.post("/login", async (req, res) => {
     const employee = await Employee.findOne({ email: req.body.email });
     !employee && res.status(401).json("Wrong password or username!");
 
-    const bytes = CryptoJS.AES.decrypt(employee.password, process.env.SECRET_KEY);
+    const bytes = CryptoJS.AES.decrypt(
+      employee.password,
+      process.env.SECRET_KEY
+    );
     const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 
     originalPassword !== req.body.password &&

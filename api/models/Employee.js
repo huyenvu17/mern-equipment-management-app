@@ -5,11 +5,14 @@ const EmployeeSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    name: { type: String },
     isAdmin: { type: Boolean, default: false },
-    equipId: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Equipment"
-    }]
+    equipment: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Equipment",
+      },
+    ],
   },
   { timestamps: true }
 );

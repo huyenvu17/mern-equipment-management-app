@@ -10,8 +10,9 @@ import { Button, TextField } from "@material-ui/core";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
-import { API_URL } from "../../utils/constants";
+import { API_URL, REGISTER_PATH } from "../../utils/constants";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { getAuthToken } from "../../utils/helper";
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -38,11 +39,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Register() {
+const Register = () => {
   const classes = useStyles();
-  const [authenticated, setAuthenticated] = useState(false);
+  const authToken = getAuthToken();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState("No");
+  const [signedUp, setSignedUp] = useState(false);
   const myHelper = {
     email: {
       required: "Email is Required",
@@ -52,17 +54,25 @@ export default function Register() {
       required: "Password is Required",
       minLength: "Password must contain at least 6 characters",
     },
+    username: {
+      required: "Username is Required",
+      minLength: "Username must contain at least 4 characters",
+    },
   };
 
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
-    console.log(data);
+    const registerUser = {
+      ...data,
+      isAdmin: isAdmin === "Yes" ? true : false,
+    };
+    console.log(registerUser);
     axios
-      .post(`${API_URL}/api/auth/login`, data)
+      .post(`${API_URL}/${REGISTER_PATH}`, registerUser)
       .then((result) => {
-        if (result?.status === 200 && result?.data) {
-          navigate("/");
-          //setAuthenticated(true);
+        if (result?.status === 201 && result?.data) {
+          navigate("/login");
+          setSignedUp(true);
         }
         console.log(result);
       })
@@ -71,7 +81,8 @@ export default function Register() {
 
   return (
     <>
-      {authenticated && <Navigate to="/" replace={true} />}
+      {/* {signedUp && <Navigate to="/login" replace={true} />} */}
+      {authToken && <Navigate to="/" replace={true} />}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -130,17 +141,31 @@ export default function Register() {
             <Box my={3} minWidth="100%">
               <Controller
                 control={control}
-                name="Name"
+                name="username"
                 defaultValue=""
+                rules={{
+                  required: true,
+                  minLength: 4,
+                }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
                     type="text"
                     fullWidth
-                    label="Name"
+                    label="Username"
                     error={error !== undefined}
-                    helperText={error ? myHelper.email[error.type] : ""}
+                    helperText={error ? myHelper.username[error.type] : ""}
                   />
+                )}
+              />
+            </Box>
+            <Box my={3} minWidth="100%">
+              <Controller
+                control={control}
+                name="name"
+                defaultValue=""
+                render={({ field, fieldState: { error } }) => (
+                  <TextField {...field} type="text" fullWidth label="Name" />
                 )}
               />
             </Box>
@@ -157,6 +182,7 @@ export default function Register() {
               <Typography variant="subtitle1">Is Admin?</Typography>
               <ToggleButtonGroup
                 color="primary"
+                name="isAdmin"
                 value={isAdmin}
                 exclusive
                 onChange={(event) => {
@@ -188,4 +214,6 @@ export default function Register() {
       </Container>
     </>
   );
-}
+};
+
+export default Register;

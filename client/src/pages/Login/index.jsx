@@ -113,7 +113,7 @@ const Login = () => {
                 defaultValue=""
                 rules={{
                   required: true,
-                  minLength: 4,
+                  minLength: 6,
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField

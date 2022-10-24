@@ -4,7 +4,7 @@ import axios from "axios";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { Container, createTheme, ThemeProvider } from "@mui/material";
 import { API_URL, EQUIPMENTS_PATH, USER } from "../../utils/constants";
-import { getStoredItem } from "../../utils/helper";
+import { getStoredItem, setAuthHeader } from "../../utils/helper";
 
 // regex for email validation
 const validateEmail = (email) => {
@@ -39,16 +39,13 @@ const Equipments = () => {
   useEffect(() => {
     axios
       .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
-        headers: {
-          token: `Bearer ${userInfo?.accessToken}`,
-        },
+        headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
         const users = res.data;
         setUser(users);
-        console.log(users);
       });
-  }, []);
+  }, [userInfo?.accessToken]);
 
   //function for updating the existing row details
   const handleRowUpdate = (newData, oldData, resolve) => {

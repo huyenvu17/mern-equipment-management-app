@@ -18,3 +18,9 @@ export const setStoredItem = (name, value) => {
 export const getStoredItem = (name) => {
   return localStorage.getItem(name);
 };
+
+export const setAuthHeader = (token) => {
+  return {
+    token: `Bearer ${token}`,
+  };
+};

@@ -38,19 +38,17 @@ function Confirmation({
           }}
         >
           <Button
-            className="btn-default"
             variant="contained"
             fullWidth
-            sx={{ marginRight: 2 }}
+            sx={{ marginRight: 2, backgroundColor: "rgb(135, 135, 135)" }}
             onClick={handleCloseModal}
           >
             Cancel
           </Button>
           <Button
-            className="btn-disabled"
             variant="contained"
             fullWidth
-            sx={{ marginLeft: 2 }}
+            sx={{ marginLeft: 2, backgroundColor: "rgb(128, 37, 235)" }}
             onClick={handleOK}
           >
             OK

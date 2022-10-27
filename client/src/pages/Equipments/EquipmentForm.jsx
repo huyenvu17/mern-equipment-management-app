@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EquipmentContent = ({ setShowNoti, isEdit, editRow }) => {
+const EquipmentForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
   const userInfo = JSON.parse(getStoredItem(USER));
   const classes = useStyles();
   const [isActive, setIsActive] = React.useState("No");
@@ -59,6 +59,8 @@ const EquipmentContent = ({ setShowNoti, isEdit, editRow }) => {
               message: "Equipment updated successfully!",
               type: "success",
             });
+            window.location.reload();
+            handleReloadData(true);
           }
         })
         .catch((error) => {
@@ -90,6 +92,7 @@ const EquipmentContent = ({ setShowNoti, isEdit, editRow }) => {
               message: "Equipment created successfully!",
               type: "success",
             });
+            window.location.reload();
           }
         })
         .catch((error) => {
@@ -225,4 +228,4 @@ const EquipmentContent = ({ setShowNoti, isEdit, editRow }) => {
   );
 };
 
-export default EquipmentContent;
+export default EquipmentForm;

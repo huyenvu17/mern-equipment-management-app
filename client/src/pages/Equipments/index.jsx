@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import axios from "axios";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { API_URL, EQUIPMENTS_PATH, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
-import EquipmentContent from "./EquipmentContent";
+import EquipmentForm from "./EquipmentForm";
 import ModalComponent from "../../components/Modal";
 import Notification from "../../components/Notification";
 import Confirmation from "../../components/Confirmation";
@@ -28,30 +28,14 @@ const Equipments = () => {
   const [showNoti, setShowNoti] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [editRow, setEditRow] = useState({});
+  const [refetchData, setRefetchData] = useState(false);
+  const [loading, setLoading] = useState(false);
   let columns = [
     { title: "NAME", field: "name" },
     {
       title: "TYPE",
       field: "type",
       width: "50%",
-      render: (row) => (
-        <Select
-          value={row?.type}
-          //onChange={handleChange}
-          displayEmpty
-          inputProps={{ "aria-label": "Without label" }}
-          disabled
-        >
-          <MenuItem value="" key={0}>
-            <em>None</em>
-          </MenuItem>
-          {EQUIPMENT_TYPE?.map((item) => (
-            <MenuItem key={item} value={item}>
-              {item}
-            </MenuItem>
-          ))}
-        </Select>
-      ),
     },
     { title: "DESCRIPTION", field: "description" },
     {
@@ -74,7 +58,8 @@ const Equipments = () => {
     },
   ];
 
-  useEffect(() => {
+  const fetchEquipments = useCallback(() => {
+    setLoading(true);
     axios
       .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
         headers: setAuthHeader(userInfo?.accessToken),
@@ -82,8 +67,14 @@ const Equipments = () => {
       .then((res) => {
         const users = res.data;
         setUser(users);
+        setLoading(false);
       });
   }, [userInfo?.accessToken]);
+
+  useEffect(() => {
+    fetchEquipments();
+    refetchData && fetchEquipments();
+  }, [fetchEquipments, refetchData]);
 
   const handleDeleteEquipment = () => {
     console.log();
@@ -92,12 +83,13 @@ const Equipments = () => {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((response) => {
-        if (response?.status === 200 && response?.data) {
+        if (response?.status === 201 && response?.data) {
           setShowNoti({
             open: true,
             message: "Equipment deleted successfully!",
             type: "success",
           });
+          window.location.reload();
         }
       })
       .catch((error) => {
@@ -186,10 +178,11 @@ const Equipments = () => {
         openModal={showEquipmentModal}
         header={isEdit ? "Edit Equipment" : "New Equipment"}
         content={
-          <EquipmentContent
+          <EquipmentForm
             setShowNoti={(value) => setShowNoti(value)}
             isEdit={isEdit}
             editRow={editRow}
+            handleReloadData={(value) => setRefetchData(value)}
           />
         }
         handleCloseModal={() => setShowEquipmentModal(false)}

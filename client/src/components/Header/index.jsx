@@ -20,7 +20,6 @@ const menu = [
   { title: "Home", path: "/" },
   { title: "Employees", path: "/employees" },
 ];
-const settings = ["Profile", "Logout"];
 
 const Header = () => {
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ const Header = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const handleSettingButtonsClick = () => {
+  const handleLogOut = () => {
     localStorage.clear();
     window.location.href = "/";
   };
@@ -178,11 +177,9 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleSettingButtonsClick}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={handleLogOut}>
+                <Typography textAlign="center">Log Out</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>

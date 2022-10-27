@@ -12,20 +12,20 @@ code {
     monospace;
 }
 .MuiButton-root.btn-primary{
-  background-color: #ed8a01;
+  background-color: #6d01ed;
   font-weight: 600;
   color: white;
 }
 
 .MuiButton-root.btn-primary:hover{
-  background-color: #e28401
+  background-color: #7011e6
 }
 
 .toggle-buttons > button {
   color: #5c5c5c8a;
     width: 50px;
     padding: 3px;
-    background: #e3e3e3;
+    background: #c0c0c0;
     font-weight: 600;
 }
 
@@ -33,5 +33,5 @@ code {
 
 .toggle-buttons > button.Mui-selected, .toggle-buttons > button.Mui-selected:hover {
   color: #fafafa;
-  background-color: rgb(237 138 1);
+  background-color: #6d01ed;
 }

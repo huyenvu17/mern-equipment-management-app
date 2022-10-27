@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/material";
 import { Button, TextField } from "@material-ui/core";
 import { Controller, useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { API_URL, AUTH_TOKEN, USER } from "../../utils/constants";
 import { getAuthToken, setStoredItem } from "../../utils/helper";
+import Notification from "../../components/Notification";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: "#ed8a01",
+    backgroundColor: "#6d01ed",
   },
   form: {
     width: "100%",
@@ -43,6 +44,7 @@ const Login = () => {
   const authToken = getAuthToken();
   const classes = useStyles();
   const navigate = useNavigate();
+  const [showNoti, setShowNoti] = useState({});
   const myHelper = {
     email: {
       required: "Email is Required",
@@ -60,13 +62,26 @@ const Login = () => {
       .post(`${API_URL}/auth/login`, data)
       .then((result) => {
         if (result?.status === 200 && result?.data) {
-          console.log(result?.data);
-          navigate("/");
-          setStoredItem(AUTH_TOKEN, result?.data?.accessToken);
-          setStoredItem(USER, JSON.stringify(result?.data));
+          setShowNoti({
+            open: true,
+            message: "Login Successfully",
+            type: "success",
+          });
+          setTimeout(() => {
+            setStoredItem(AUTH_TOKEN, result?.data?.accessToken);
+            setStoredItem(USER, JSON.stringify(result?.data));
+            navigate("/");
+          }, 1500);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setShowNoti({
+          open: true,
+          message: "Login failed",
+          type: "error",
+        });
+        console.log(error);
+      });
   };
 
   return (
@@ -145,6 +160,11 @@ const Login = () => {
           </form>
         </div>
       </Container>
+      <Notification
+        type={showNoti?.type}
+        openNotification={showNoti?.open}
+        message={showNoti?.message}
+      />
     </>
   );
 };

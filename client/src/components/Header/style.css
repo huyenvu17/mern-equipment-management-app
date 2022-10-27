@@ -1,3 +1,4 @@
-.header-wrapper{
+.header-wrapper.MuiAppBar-root{
     margin-bottom: 25px;
+    background-color: #6d01ed;
 }

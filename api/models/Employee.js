@@ -7,12 +7,10 @@ const EmployeeSchema = new mongoose.Schema(
     password: { type: String, required: true },
     name: { type: String },
     isAdmin: { type: Boolean, default: false },
-    equipment: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Equipment",
-      },
-    ],
+    borrowingInfo: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "IssueAndReturn",
+    }]
   },
   { timestamps: true }
 );

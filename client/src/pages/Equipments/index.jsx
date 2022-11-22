@@ -5,8 +5,6 @@ import {
   Container,
   createTheme,
   Icon,
-  MenuItem,
-  Select,
   ThemeProvider,
   Typography,
 } from "@mui/material";
@@ -29,7 +27,6 @@ const Equipments = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [editRow, setEditRow] = useState({});
   const [refetchData, setRefetchData] = useState(false);
-  const [loading, setLoading] = useState(false);
   let columns = [
     { title: "NAME", field: "name" },
     {
@@ -59,7 +56,6 @@ const Equipments = () => {
   ];
 
   const fetchEquipments = useCallback(() => {
-    setLoading(true);
     axios
       .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
         headers: setAuthHeader(userInfo?.accessToken),
@@ -67,7 +63,6 @@ const Equipments = () => {
       .then((res) => {
         const users = res.data;
         setUser(users);
-        setLoading(false);
       });
   }, [userInfo?.accessToken]);
 

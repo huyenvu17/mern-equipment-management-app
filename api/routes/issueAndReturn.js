@@ -1,10 +1,10 @@
 const router = require("express").Router();
-const Equipment = require("../models/Equipment");
+const IssueAndReturn = require("../models/IssueAndReturn");
 const verify = require("../utils/verifyToken");
 
 // GET ALL
 router.get("/", verify, async (req, res) => {
-  Equipment.find()
+    IssueAndReturn.find()
     .then((equipments) => res.json(equipments))
     .catch((error) => res.status(400).json("Error:" + error));
 });
@@ -12,7 +12,7 @@ router.get("/", verify, async (req, res) => {
 // GET ONE
 router.get("/:id", async (req, res) => {
   try {
-    const equipment = await Equipment.findById(req.params.id);
+    const equipment = await IssueAndReturn.findById(req.params.id);
     res.status(200).json(equipment);
   } catch (error) {
     res.status(500).json(error);
@@ -22,10 +22,10 @@ router.get("/:id", async (req, res) => {
 // CREATE
 router.post("/", verify, async (req, res) => {
   if (req.user.isAdmin) {
-    const newEquipment = new Equipment(req.body);
+    const newIssueEvent = new IssueAndReturn(req.body);
     try {
-      const savedEquipmentItem = await newEquipment.save();
-      res.status(201).json(savedEquipmentItem);
+      const savedIssueEvent = await newIssueEvent.save();
+      res.status(201).json(savedIssueEvent);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -38,12 +38,12 @@ router.post("/", verify, async (req, res) => {
 router.put("/:id", verify, async (req, res) => {
   if (req.user.isAdmin) {
     try {
-      const updatedEquipment = await Equipment.findByIdAndUpdate(
+      const updatedIssueEvent = await IssueAndReturn.findByIdAndUpdate(
         req.params.id,
         { $set: req.body },
         { new: true }
       );
-      res.status(200).json(updatedEquipment);
+      res.status(200).json(updatedIssueEvent);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -56,8 +56,8 @@ router.put("/:id", verify, async (req, res) => {
 router.delete("/:id", verify, async (req, res) => {
   if (req.user.isAdmin) {
     try {
-      const deletedEquipment = await Equipment.findByIdAndDelete(req.params.id);
-      res.status(201).json(deletedEquipment);
+      const deletedIssueEvent = await IssueAndReturn.findByIdAndDelete(req.params.id);
+      res.status(201).json(deletedIssueEvent);
     } catch (error) {
       res.status(500).json(error);
     }

@@ -9,7 +9,6 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button, TextField } from "@material-ui/core";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
 import { API_URL, REGISTER_PATH } from "../../utils/constants";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { getAuthToken } from "../../utils/helper";
@@ -44,7 +43,6 @@ const Register = () => {
   const authToken = getAuthToken();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState("No");
-  const [signedUp, setSignedUp] = useState(false);
   const myHelper = {
     email: {
       required: "Email is Required",
@@ -72,7 +70,6 @@ const Register = () => {
       .then((result) => {
         if (result?.status === 201 && result?.data) {
           navigate("/login");
-          setSignedUp(true);
         }
         console.log(result);
       })

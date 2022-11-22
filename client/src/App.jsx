@@ -6,6 +6,7 @@ import HomeLayout from "./components/HomeLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Error from "./pages/Error";
+import IssueAndReturn from "./pages/IssueAndReturn";
 
 function App() {
   return (
@@ -13,8 +14,10 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomeLayout />} errorElement={<Error />}>
-            <Route index element={<Equipments />} exact />
+            <Route index element={<IssueAndReturn/>} exact/>
             <Route path="/employees" element={<Employees />} />
+            <Route path="/equipments"  element={<Equipments />}  />
+            
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

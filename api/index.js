@@ -2,9 +2,10 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const appRoute = require("./routes/equipments");
 const authRoute = require("./routes/auth");
 const employeesRoute = require("./routes/employee");
+const equipmentsRoute = require("./routes/equipments");
+const issueAndReturnRoute = require("./routes/issueAndReturn");
 const cors = require("cors");
 dotenv.config();
 
@@ -24,7 +25,8 @@ app.use(express.json());
 
 app.use("/api/auth", authRoute);
 app.use("/api/employees", employeesRoute);
-app.use("/api/equipments", appRoute);
+app.use("/api/equipments", equipmentsRoute);
+app.use("/api/issue-and-return", issueAndReturnRoute);
 
 app.listen(8088, () => {
   console.log("Backend server is running!");

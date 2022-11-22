@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 const menu = [
   { title: "Home", path: "/" },
   { title: "Employees", path: "/employees" },
+  { title: "Equipments", path: "/equipments" },
 ];
 
 const Header = () => {

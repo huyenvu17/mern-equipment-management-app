@@ -1,15 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Select, TextField } from "@material-ui/core";
-import { Box, MenuItem, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Button,  TextField } from "@material-ui/core";
+import { Box,  ToggleButton, ToggleButtonGroup } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
 import { API_URL, EMPLOYEES_PATH, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
-import { employee_TYPE } from ".";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -27,10 +25,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
+const EmployeesForm = ({ setShowNoti, isEdit, editRow }) => {
   const userInfo = JSON.parse(getStoredItem(USER));
   const classes = useStyles();
-  const [isAdmin, setIsAdmin] = React.useState("No");
+  const [isAdmin, setIsAdmin] = useState(isEdit ? editRow?.isAdmin ? "Yes" : "No" : "No");
   const myHelper = {
     name: {
       required: "Name is Required",
@@ -69,7 +67,6 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
               type: "success",
             });
             window.location.reload();
-            handleReloadData(true);
           }
         })
         .catch((error) => {
@@ -132,7 +129,7 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
               <Controller
                 control={control}
                 name="email"
-                defaultValue=""
+                defaultValue={isEdit ? editRow?.email : ""}
                 rules={{
                   required: true,
                   pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
@@ -140,6 +137,7 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
                 render={({ field, fieldState: { error } }) => (
                   <TextField
                     {...field}
+                    disabled={isEdit}
                     type="email"
                     fullWidth
                     label="Email"
@@ -149,7 +147,7 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
                 )}
               />
             </Box>
-            <Box my={3} minWidth="100%">
+            {!isEdit && <Box my={3} minWidth="100%">
               <Controller
                 control={control}
                 name="password"
@@ -169,12 +167,13 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
                   />
                 )}
               />
-            </Box>
+            </Box>}
+            
             <Box my={3} minWidth="100%">
               <Controller
                 control={control}
                 name="username"
-                defaultValue=""
+                defaultValue={isEdit ? editRow?.username : ""}
                 rules={{
                   required: true,
                   minLength: 4,
@@ -195,7 +194,7 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
               <Controller
                 control={control}
                 name="name"
-                defaultValue=""
+                defaultValue={isEdit ? editRow?.name : ""}
                 render={({ field, fieldState: { error } }) => (
                   <TextField {...field} type="text" fullWidth label="Name" />
                 )}

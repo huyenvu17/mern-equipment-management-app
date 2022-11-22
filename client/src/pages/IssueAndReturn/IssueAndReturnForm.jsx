@@ -8,7 +8,7 @@ import { Box, MenuItem, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import axios from "axios";
 import { API_URL, EQUIPMENTS_PATH, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
-import { EQUIPMENT_TYPE } from ".";
+import { EQUIPMENT_TYPE } from "../Equipments";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EquipmentForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
+const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
   const userInfo = JSON.parse(getStoredItem(USER));
   const classes = useStyles();
   const [isActive, setIsActive] = useState(isEdit ? editRow?.isActive ? "Yes" : "No" : "No");
@@ -228,4 +228,4 @@ const EquipmentForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
   );
 };
 
-export default EquipmentForm;
+export default IssueAndReturnForm;

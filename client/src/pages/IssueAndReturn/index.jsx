@@ -14,12 +14,12 @@ import {
   USER,
 } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
-import EmployeesForm from "./EmployeesForm";
 import ModalComponent from "../../components/Modal";
 import Notification from "../../components/Notification";
 import Confirmation from "../../components/Confirmation";
+import IssueAndReturnForm from "./IssueAndReturnForm";
 
-const Employees = () => {
+const IssueAndReturn = () => {
   const userInfo = JSON.parse(getStoredItem(USER));
   const [user, setUser] = useState([]);
   const defaultMaterialTheme = createTheme();
@@ -130,7 +130,7 @@ const Employees = () => {
     <Container className="table-comp">
       <ThemeProvider theme={defaultMaterialTheme}>
         <MaterialTable
-          title="Employees"
+          title="IssueAndReturn"
           columns={columns}
           data={user}
           components={{
@@ -144,7 +144,7 @@ const Employees = () => {
                 }}
               >
                 <Typography variant="h5" fontWeight={600}>
-                  Employees
+                  IssueAndReturn
                 </Typography>
                 <MTableToolbar {...props} />
               </div>
@@ -193,9 +193,9 @@ const Employees = () => {
 
       <ModalComponent
         openModal={showEquipmentModal}
-        header={isEdit ? "Edit Employee" : "New Employee"}
+        header={isEdit ? "Edit Issue" : "New Issue"}
         content={
-          <EmployeesForm
+          <IssueAndReturnForm
             setShowNoti={(value) => setShowNoti(value)}
             isEdit={isEdit}
             editRow={editRow}
@@ -220,4 +220,4 @@ const Employees = () => {
   );
 };
 
-export default Employees;
+export default IssueAndReturn;

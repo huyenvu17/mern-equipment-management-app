@@ -211,8 +211,8 @@ const Employees = () => {
       />
       <Confirmation
         openModal={showConfirmModal}
-        header={"Are you sure to delete this item?"}
-        content={`Delete Item ${editRow?.name}`}
+        header={"Are you sure to delete this employee?"}
+        content={`Delete ${editRow?.name}`}
         handleOK={handleDeleteEquipment}
         handleCloseModal={() => setShowConfirmModal(false)}
       />

@@ -4,7 +4,7 @@ const IssueAndReturnSchema = new mongoose.Schema(
   {
     borrowDate: { type: Date },
     returnDate: { type: Date },
-    borrower: { type:  mongoose.Schema.Types.ObjectId, ref: "Employee", },
+    employee: { type: mongoose.Schema.Types.ObjectId, ref: "Employee" },
     status: { type: String },
     equipment: [
       {

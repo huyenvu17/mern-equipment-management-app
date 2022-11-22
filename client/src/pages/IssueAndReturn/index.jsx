@@ -11,6 +11,7 @@ import {
 import {
   API_URL,
   EMPLOYEES_PATH,
+  ISSUE_AND_RETURN,
   USER,
 } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
@@ -21,77 +22,57 @@ import IssueAndReturnForm from "./IssueAndReturnForm";
 
 const IssueAndReturn = () => {
   const userInfo = JSON.parse(getStoredItem(USER));
-  const [user, setUser] = useState([]);
   const defaultMaterialTheme = createTheme();
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showNoti, setShowNoti] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [editRow, setEditRow] = useState({});
-  const [equipments,setEquipments] = useState([]);
+  const [issues, setIssues] = useState([]);
 
   let columns = [
-    { title: "USERNAME", field: "username", width: "50%" },
     {
-      title: "EMAIL",
-      field: "email",
+      title: "EQUIPMENT",
       width: "50%",
-    },
-    {
-      title: "NAMW",
-      field: "name",
-      width: "50%",
-    },
-    {
-      title: "EQUIPMENTS",
       field: "equipment",
       render: (row) => <div>{row?.equipment?.map((item) => item)}</div>,
     },
     {
-      title: "ADMIN",
-      field: "isAdmin",
-      render: (row) => (
-        <div
-          style={{
-            width: 60,
-            padding: 5,
-            textAlign: "center",
-            borderRadius: 5,
-            color: "white",
-            backgroundColor: row?.isAdmin ? "#8025eb" : "#878787",
-          }}
-        >
-          {row?.isAdmin ? "Admin" : "Member"}
-        </div>
-      ),
+      title: "EMPLOYEE",
+      field: "employee",
+      width: "50%",
+    },
+    {
+      title: "BORROW DATE",
+      width: "50%",
+    },
+    {
+      title: "RETURN DATE",
+      width: "50%",
+    },
+    {
+      title: "STATUS",
+      field: "status",
+      width: "50%",
     },
   ];
-  const fetchEquipments = useCallback(() => {
+  const fetchIssueAndReturn = useCallback(() => {
     axios
-      .get(`${API_URL}/${EMPLOYEES_PATH}`, {
+      .get(`${API_URL}/${ISSUE_AND_RETURN}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
-        const equipments = res.data;
-        setEquipments(equipments);
+        const issuesData = res.data;
+        console.log("issuesData",issuesData)
+        setIssues(issuesData);
       });
-  }, [userInfo?.accessToken, setEquipments]);
+  }, [userInfo?.accessToken]);
 
-  const fetchEmployees = useCallback(() => {
-    axios
-      .get(`${API_URL}/${EMPLOYEES_PATH}`, {
-        headers: setAuthHeader(userInfo?.accessToken),
-      })
-      .then((res) => {
-        const users = res.data;
-        setUser(users);
-      });
-  }, [userInfo?.accessToken, setUser]);
+
 
   useEffect(() => {
-    fetchEmployees();
-    fetchEquipments();
-  }, [fetchEquipments, fetchEmployees]);
+    fetchIssueAndReturn();
+  }, [fetchIssueAndReturn]);
 
   const handleDeleteEquipment = () => {
     console.log();
@@ -130,9 +111,9 @@ const IssueAndReturn = () => {
     <Container className="table-comp">
       <ThemeProvider theme={defaultMaterialTheme}>
         <MaterialTable
-          title="IssueAndReturn"
+          title="Issue And Return"
           columns={columns}
-          data={user}
+          data={issues}
           components={{
             Toolbar: (props) => (
               <div
@@ -144,7 +125,7 @@ const IssueAndReturn = () => {
                 }}
               >
                 <Typography variant="h5" fontWeight={600}>
-                  IssueAndReturn
+                  Issue And Return
                 </Typography>
                 <MTableToolbar {...props} />
               </div>

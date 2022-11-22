@@ -15,7 +15,6 @@ import ModalComponent from "../../components/Modal";
 import Notification from "../../components/Notification";
 import Confirmation from "../../components/Confirmation";
 
-export const EQUIPMENT_TYPE = ["Laptop", "PC"];
 
 const Equipments = () => {
   const userInfo = JSON.parse(getStoredItem(USER));
@@ -26,7 +25,6 @@ const Equipments = () => {
   const [showNoti, setShowNoti] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [editRow, setEditRow] = useState({});
-  const [refetchData, setRefetchData] = useState(false);
   let columns = [
     { title: "NAME", field: "name" },
     {
@@ -68,8 +66,7 @@ const Equipments = () => {
 
   useEffect(() => {
     fetchEquipments();
-    refetchData && fetchEquipments();
-  }, [fetchEquipments, refetchData]);
+  }, [fetchEquipments]);
 
   const handleDeleteEquipment = () => {
     console.log();
@@ -177,7 +174,6 @@ const Equipments = () => {
             setShowNoti={(value) => setShowNoti(value)}
             isEdit={isEdit}
             editRow={editRow}
-            handleReloadData={(value) => setRefetchData(value)}
           />
         }
         handleCloseModal={() => setShowEquipmentModal(false)}

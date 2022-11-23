@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Select, TextField } from "@material-ui/core";
-import { Box, Chip, MenuItem, OutlinedInput, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Chip, MenuItem } from "@mui/material";
 import axios from "axios";
-import { API_URL, EMPLOYEES_PATH, EQUIPMENTS_PATH, ISSUE_AND_RETURN, USER } from "../../utils/constants";
+import { API_URL, ISSUE_AND_RETURN, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
+import moment from "moment";
 
 export const ISSUE_STATUS = ["Borrowing", "Returned"];
 
@@ -30,14 +31,16 @@ const useStyles = makeStyles((theme) => ({
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
+  console.log("editRow",editRow)
+  const {rowData, employees, equipments} = editRow
   const theme = useTheme();
   const userInfo = JSON.parse(getStoredItem(USER));
   const classes = useStyles();
   const [selectedEquipments, setSelectedEquipments] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState();
-  const [equipmentsList, setEquipmentsList] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [issueStatus, setIssueStatus] = useState();
+  const [selectedEmployee, setSelectedEmployee] = useState(employees?.find(employee=> employee?._id === rowData?.employee));
+  const [issueStatus, setIssueStatus] = useState(rowData?.status);
+  const [selectedBorrowDate, setSelectedBorrowDate] = useState(rowData?.borrowDate);
+  const [selectedReturnDate, setSelectedReturnDate] = useState(rowData?.returnDate);
   const MenuProps = {
     PaperProps: {
       style: {
@@ -47,35 +50,6 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
     },
   };
 
-  const fetchEquipments = useCallback(() => {
-    axios
-      .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
-        headers: setAuthHeader(userInfo?.accessToken),
-      })
-      .then((res) => {
-        setEquipmentsList(res?.data);
-      });
-  }, [userInfo?.accessToken]);
-  const fetchEmployees = useCallback(() => {
-
-
-    axios
-      .get(`${API_URL}/${EMPLOYEES_PATH}`,{
-        headers: setAuthHeader(userInfo?.accessToken),
-      })
-      .then((res) => {
-        const employeesData = res.data;
-        setEmployees(employeesData);
-      });
-  }, [userInfo?.accessToken]);
-
-  useEffect(() => {
-    fetchEquipments()
-    fetchEmployees()
-    console.log("running")
-  
-  }, [fetchEmployees,fetchEquipments])
-  
   function getStyles(name, personName, theme) {
     return {
       fontWeight:
@@ -96,15 +70,20 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
 
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
+    console.log("selectedEmployee",selectedEmployee)
+    console.log("selectedEquipments",selectedEquipments, rowData)
     const savedIssue = {
       ...data,
+      borrowDate: selectedBorrowDate,
+      returnDate: selectedReturnDate,
+      status: issueStatus,
       equipment: selectedEquipments?.map(equipment => equipment?.id),
       employee: employees?.find(employee => employee?.email === selectedEmployee)
     };
     console.log("savedIssue",savedIssue)
     if (isEdit) {
       axios
-        .put(`${API_URL}/${ISSUE_AND_RETURN}/${editRow?._id}`, savedIssue, {
+        .put(`${API_URL}/${ISSUE_AND_RETURN}/${rowData?._id}`, savedIssue, {
           headers: setAuthHeader(userInfo?.accessToken),
         })
         .then((result) => {
@@ -182,6 +161,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                 name="equipments"
                 render={({ field, fieldState: { error } }) => (
                   <Select
+                    key={field}
                     labelId="demo-multiple-chip-label"
                     id="demo-multiple-chip"
                     multiple
@@ -197,13 +177,13 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                     )}
                     MenuProps={MenuProps}
                   >
-                    {equipmentsList?.map((equipments) => (
+                    {equipments?.map((equipment) => (
                       <MenuItem
-                        key={equipments?.id}
-                        value={equipments?.name}
-                        style={getStyles(equipments?.name, equipmentsList, theme)}
+                        key={equipment?.id}
+                        value={equipment?.name}
+                        style={getStyles(equipment?.name, equipments, theme)}
                       >
-                        {equipments?.name}
+                        {equipment?.name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -219,7 +199,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                 render={({ field, fieldState: { error } }) => (
                   <Select
                   style={{width: "100%"}}
-                    value={selectedEmployee}
+                    value={selectedEmployee?.email}
                     onChange={(event) => setSelectedEmployee(event.target.value)}  
                   >
                     {employees?.map((item) => (
@@ -235,14 +215,16 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               <Controller
                 control={control}
                 name="borrowDate"
-                defaultValue={isEdit ? editRow?.name : ""}
+                defaultValue={isEdit ? rowData?.borrowDate : ""}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     key={field?.id}
                     type="date"
+                    value={isEdit ? moment(rowData?.borrowDate).format("mm/dd/yyyy") : ""}
                     fullWidth
                     label="Borrow Date"
+                    onChange={(event) => setSelectedBorrowDate(event.target.value)}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -254,12 +236,14 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               <Controller
                 control={control}
                 name="returnDate"
-                defaultValue={isEdit ? editRow?.name : ""}
+                defaultValue={isEdit ? rowData?.returnDate : ""}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     type="date"
                     fullWidth
+                    value={isEdit ? rowData?.returnDate : ""}
+                    onChange={(event) => setSelectedReturnDate(event.target.value)}
                     label="Return Date"
                     InputLabelProps={{
                       shrink: true,
@@ -273,7 +257,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
             <Controller
                 control={control}
                 name="status"
-                defaultValue={isEdit ? editRow?.type : ""}
+                defaultValue={isEdit ? rowData?.type : ""}
                 render={({ field, fieldState: { error } }) => (
                   <Select
                   style={{width: "100%"}}

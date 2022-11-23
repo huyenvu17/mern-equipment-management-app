@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import axios from "axios";
+import moment from "moment";
 import {
   Container,
   createTheme,
@@ -11,6 +12,7 @@ import {
 import {
   API_URL,
   EMPLOYEES_PATH,
+  EQUIPMENTS_PATH,
   ISSUE_AND_RETURN,
   USER,
 } from "../../utils/constants";
@@ -29,26 +31,33 @@ const IssueAndReturn = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [editRow, setEditRow] = useState({});
   const [issues, setIssues] = useState([]);
+  const [availableEquipments, setAvailableEquipments] = useState([]);
+  const [availableEmployees, setAvailableEmployees] = useState([]);
 
   let columns = [
     {
       title: "EQUIPMENT",
       width: "50%",
       field: "equipment",
-      render: (row) => <div>{row?.equipment?.map((item) => item)}</div>,
+      render: (row) => <div>{row?.equipment && availableEquipments?.filter(equipment => row?.equipment?.includes(equipment))}</div>,
     },
     {
       title: "EMPLOYEE",
-      field: "employee",
       width: "50%",
+      render: (row) => <div>{row?.employee && availableEmployees?.find(employee => employee?.name === row?.employee)}</div>,
+
     },
     {
       title: "BORROW DATE",
       width: "50%",
+      render: (row) => <div>{moment(row?.borrowDate).format("DD/MM/YYYY")}</div>,
+
     },
     {
       title: "RETURN DATE",
       width: "50%",
+      render: (row) => <div>{moment(row?.returnedDate).format("DD/MM/YYYY")}</div>,
+
     },
     {
       title: "STATUS",
@@ -56,6 +65,29 @@ const IssueAndReturn = () => {
       width: "50%",
     },
   ];
+  
+  const fetchEquipments = useCallback(() => {
+    axios
+      .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
+        headers: setAuthHeader(userInfo?.accessToken),
+      })
+      .then((res) => {
+        setAvailableEquipments(res?.data);
+      });
+  }, [userInfo?.accessToken]);
+  const fetchEmployees = useCallback(() => {
+
+
+    axios
+      .get(`${API_URL}/${EMPLOYEES_PATH}`,{
+        headers: setAuthHeader(userInfo?.accessToken),
+      })
+      .then((res) => {
+        const employeesData = res.data;
+        setAvailableEmployees(employeesData);
+      });
+  }, [userInfo?.accessToken]);
+
   const fetchIssueAndReturn = useCallback(() => {
     axios
       .get(`${API_URL}/${ISSUE_AND_RETURN}`, {
@@ -63,7 +95,6 @@ const IssueAndReturn = () => {
       })
       .then((res) => {
         const issuesData = res.data;
-        console.log("issuesData",issuesData)
         setIssues(issuesData);
       });
   }, [userInfo?.accessToken]);
@@ -71,11 +102,12 @@ const IssueAndReturn = () => {
 
 
   useEffect(() => {
+    fetchEquipments();
+    fetchEmployees();
     fetchIssueAndReturn();
-  }, [fetchIssueAndReturn]);
+  }, [fetchIssueAndReturn, fetchEmployees, fetchEquipments]);
 
   const handleDeleteEquipment = () => {
-    console.log();
     axios
       .delete(`${API_URL}/${EMPLOYEES_PATH}/${editRow._id}`, {
         headers: setAuthHeader(userInfo?.accessToken),
@@ -106,7 +138,6 @@ const IssueAndReturn = () => {
         }
       });
   };
-
   return (
     <Container className="table-comp">
       <ThemeProvider theme={defaultMaterialTheme}>
@@ -148,9 +179,12 @@ const IssueAndReturn = () => {
             {
               icon: "edit",
               onClick: (event, rowData) => {
-                console.log(rowData);
                 setIsEdit(true);
-                setEditRow(rowData);
+                setEditRow({
+                  rowData,
+                  employees: availableEmployees,
+                  equipments: availableEquipments
+                });
                 setShowEquipmentModal(true);
               },
             },

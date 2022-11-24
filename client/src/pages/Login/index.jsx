@@ -57,7 +57,6 @@ const Login = () => {
   };
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
-    console.log(data);
     axios
       .post(`${API_URL}/auth/login`, data)
       .then((result) => {
@@ -77,10 +76,9 @@ const Login = () => {
       .catch((error) => {
         setShowNoti({
           open: true,
-          message: "Login failed",
+          message: error?.response?.data,
           type: "error",
         });
-        console.log(error);
       });
   };
 

@@ -17,9 +17,9 @@ router.post("/register", async (req, res) => {
   });
   try {
     const employee = await newEmployee.save();
-    res.status(201).json(employee);
+    return res.status(201).json(employee);
   } catch (err) {
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 
@@ -35,8 +35,9 @@ router.post("/login", async (req, res) => {
     );
     const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 
-    originalPassword !== req.body.password &&
-      res.status(401).json("Wrong password or username!");
+    if(originalPassword !== req.body.password){
+      return res.status(401).json("Wrong password or username!");
+    }
 
     const accessToken = jwt.sign(
       { id: employee._id, isAdmin: employee.isAdmin },
@@ -46,9 +47,9 @@ router.post("/login", async (req, res) => {
 
     const { password, ...info } = employee._doc;
 
-    res.status(200).json({ ...info, accessToken });
+    return res.status(200).json({ ...info, accessToken });
   } catch (err) {
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 

@@ -41,7 +41,7 @@ const IssueAndReturn = () => {
       width: "50%",
       field: "equipment",
       render: (row) => {
-        return <div>{row?.equipment && availableEquipments?.filter(equipment => row?.equipment?.includes(equipment))}</div>
+        return <div>{row?.equipment && availableEquipments?.filter(equipment => row?.equipment?.includes(equipment?._id))?.map(item => item?.name)}</div>
       },
     },
     {

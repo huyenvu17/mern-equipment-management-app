@@ -8,7 +8,9 @@ import { Box, Chip, MenuItem } from "@mui/material";
 import axios from "axios";
 import { API_URL, ISSUE_AND_RETURN, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
-import moment from "moment";
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 
 export const ISSUE_STATUS = ["Borrowing", "Returned"];
 
@@ -30,17 +32,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
-const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
-  console.log("isEdit",isEdit)
+const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow }) => {
   const {rowData, employees, equipments} = editRow
   const theme = useTheme();
   const userInfo = JSON.parse(getStoredItem(USER));
   const classes = useStyles();
-  const [selectedEquipments, setSelectedEquipments] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(employees?.find(employee=> employee?._id === rowData?.employee));
+  const [selectedEquipments, setSelectedEquipments] = useState(equipments?.filter(equipment => rowData?.equipment?.includes(equipment?._id))?.map(item => item?.name) || []);
+  const [selectedEmployee, setSelectedEmployee] = useState(employees?.find(employee=> employee?._id === rowData?.employee) || []);
   const [issueStatus, setIssueStatus] = useState(rowData?.status);
   const [selectedBorrowDate, setSelectedBorrowDate] = useState(rowData?.borrowDate);
   const [selectedReturnDate, setSelectedReturnDate] = useState(rowData?.returnDate);
+
   const MenuProps = {
     PaperProps: {
       style: {
@@ -70,36 +72,32 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
 
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
-    console.log("selectedEmployee",selectedEmployee)
-    console.log("selectedEquipments",selectedEquipments, rowData)
     const savedIssue = {
       ...data,
       borrowDate: selectedBorrowDate,
       returnDate: selectedReturnDate,
       status: issueStatus,
-      equipment: equipments?.map(equipment => selectedEquipments?.includes(equipment?.name)),
-      employee: employees?.find(employee => employee?.email === selectedEmployee)
+      equipment: equipments?.filter(equipment => selectedEquipments?.includes(equipment?.name))?.map(item => item?._id),
+      employee: employees?.find(employee => employee?.email === selectedEmployee)?._id
     };
-    console.log("savedIssue",savedIssue)
+
+
     if (isEdit) {
       axios
         .put(`${API_URL}/${ISSUE_AND_RETURN}/${rowData?._id}`, savedIssue, {
           headers: setAuthHeader(userInfo?.accessToken),
         })
         .then((result) => {
-          console.log(result);
           if (result?.status === 200 && result?.data) {
             setShowNoti({
               open: true,
               message: "Issue updated successfully!",
               type: "success",
             });
-            //window.location.reload();
-            handleReloadData(true);
+            window.location.reload();
           }
         })
         .catch((error) => {
-          console.log(error);
           if (error?.response?.status === 403) {
             setShowNoti({
               open: true,
@@ -114,7 +112,6 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
           headers: setAuthHeader(userInfo?.accessToken),
         })
         .then((result) => {
-          console.log(result);
           if (result?.status === 201 && result?.data) {
             setShowNoti({
               open: true,
@@ -125,7 +122,6 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
           }
         })
         .catch((error) => {
-          console.log(error);
           if (error?.response?.status === 403) {
             setShowNoti({
               open: true,
@@ -153,7 +149,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               <Controller
                 key="equipments"
                 control={control}
-                name="equipments"
+                name="equipment"
                 render={({ field, fieldState: { error } }) => (
                   <Select
                     labelId="demo-multiple-chip-label"
@@ -161,7 +157,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                     multiple
                     value={selectedEquipments}
                     onChange={handleEquipmentChange}
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                     renderValue={(selected) => (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected?.map((item) => (
@@ -185,16 +181,17 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               />
             </Box>
             <Box my={3} minWidth="100%">
-            <Typography variant="subtitle1">Borrower</Typography>
-            <Controller
+              <Typography variant="subtitle1">Borrower</Typography>
+              <Controller
                 control={control}
-                name="borrower"
-                //defaultValue={isEdit ? editRow?.type : ""}
+                name="employee"
                 render={({ field, fieldState: { error } }) => (
                   <Select
-                  style={{width: "100%"}}
+                    style={{ width: "100%" }}
                     value={selectedEmployee?.email}
-                    onChange={(event) => setSelectedEmployee(event.target.value)}  
+                    onChange={(event) =>
+                      setSelectedEmployee(event.target.value)
+                    }
                   >
                     {employees?.map((item) => (
                       <MenuItem key={item?._id} value={item?.email}>
@@ -206,57 +203,42 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               />
             </Box>
             <Box my={3} minWidth="100%">
-              <Controller
-                control={control}
-                name="borrowDate"
-                //defaultValue={isEdit ? rowData?.borrowDate : ""}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    key={field?.id}
-                    type="date"
-                    value={isEdit ? moment(rowData?.borrowDate).format("mm/dd/yyyy") : ""}
-                    fullWidth
-                    label="Borrow Date"
-                    onChange={(event) => setSelectedBorrowDate(event.target.value)}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                )}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Borrow Date"
+                  inputFormat="DD/MM/YYYY"
+                  value={selectedBorrowDate}
+                  onChange={(value) =>
+                    setSelectedBorrowDate(value)
+                  }
+                  renderInput={(params) => <TextField fullWidth {...params} />}
+                />
+              </LocalizationProvider>
             </Box>
             <Box my={3} minWidth="100%">
-              <Controller
-                control={control}
-                name="returnDate"
-                defaultValue={isEdit ? rowData?.returnDate : ""}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type="date"
-                    fullWidth
-                    value={isEdit ? rowData?.returnDate : ""}
-                    onChange={(event) => setSelectedReturnDate(event.target.value)}
-                    label="Return Date"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                )}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Return Date"
+                  inputFormat="DD/MM/YYYY"
+                  value={selectedReturnDate}
+                  onChange={(value) =>
+                    setSelectedReturnDate(value)
+                  }
+                  renderInput={(params) => <TextField fullWidth {...params} />}
+                />
+              </LocalizationProvider>
             </Box>
             <Box my={3} minWidth="100%">
-            <Typography variant="subtitle1">Status</Typography>
-            <Controller
+              <Typography variant="subtitle1">Status</Typography>
+              <Controller
                 control={control}
                 name="status"
                 defaultValue={isEdit ? rowData?.type : ""}
                 render={({ field, fieldState: { error } }) => (
                   <Select
-                  style={{width: "100%"}}
+                    style={{ width: "100%" }}
                     value={issueStatus}
-                    onChange={(event) => setIssueStatus(event.target.value)}  
+                    onChange={(event) => setIssueStatus(event.target.value)}
                   >
                     {ISSUE_STATUS?.map((item) => (
                       <MenuItem key={item} value={item}>
@@ -267,7 +249,6 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                 )}
               />
             </Box>
-
 
             <Button
               type="submit"

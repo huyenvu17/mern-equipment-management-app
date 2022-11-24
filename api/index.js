@@ -26,7 +26,7 @@ app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/employees", employeesRoute);
 app.use("/api/equipments", equipmentsRoute);
-app.use("/api/issue-and-return", issueAndReturnRoute);
+app.use("/api/issueandreturn", issueAndReturnRoute);
 
 app.listen(8088, () => {
   console.log("Backend server is running!");

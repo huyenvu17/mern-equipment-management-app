@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button,  TextField } from "@material-ui/core";
 import { Box,  ToggleButton, ToggleButtonGroup } from "@mui/material";
 import axios from "axios";
-import { API_URL, EMPLOYEES_PATH, USER } from "../../utils/constants";
+import { API_URL, EMPLOYEES_PATH, REGISTER_PATH, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
 
 const useStyles = makeStyles((theme) => ({
@@ -87,7 +87,7 @@ const EmployeesForm = ({ setShowNoti, isEdit, editRow }) => {
         });
     } else {
       axios
-        .post(`${API_URL}/${EMPLOYEES_PATH}`, savedEmployee, {
+        .post(`${API_URL}/${REGISTER_PATH}`, savedEmployee, {
           headers: setAuthHeader(userInfo?.accessToken),
         })
         .then((result) => {

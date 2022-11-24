@@ -33,18 +33,21 @@ const IssueAndReturn = () => {
   const [issues, setIssues] = useState([]);
   const [availableEquipments, setAvailableEquipments] = useState([]);
   const [availableEmployees, setAvailableEmployees] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   let columns = [
     {
       title: "EQUIPMENT",
       width: "50%",
       field: "equipment",
-      render: (row) => <div>{row?.equipment && availableEquipments?.filter(equipment => row?.equipment?.includes(equipment))}</div>,
+      render: (row) => {
+        return <div>{row?.equipment && availableEquipments?.filter(equipment => row?.equipment?.includes(equipment))}</div>
+      },
     },
     {
       title: "EMPLOYEE",
       width: "50%",
-      render: (row) => <div>{row?.employee && availableEmployees?.find(employee => employee?.name === row?.employee)}</div>,
+      render: (row) => <div>{row?.employee && availableEmployees?.find(employee => employee?._id === row?.employee)?.email}</div>,
 
     },
     {
@@ -67,17 +70,19 @@ const IssueAndReturn = () => {
   ];
   
   const fetchEquipments = useCallback(() => {
+    setLoading(true)
     axios
       .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
         setAvailableEquipments(res?.data);
+        setLoading(false)
       });
   }, [userInfo?.accessToken]);
+
   const fetchEmployees = useCallback(() => {
-
-
+    setLoading(true)
     axios
       .get(`${API_URL}/${EMPLOYEES_PATH}`,{
         headers: setAuthHeader(userInfo?.accessToken),
@@ -85,16 +90,19 @@ const IssueAndReturn = () => {
       .then((res) => {
         const employeesData = res.data;
         setAvailableEmployees(employeesData);
+        setLoading(false)
       });
   }, [userInfo?.accessToken]);
 
   const fetchIssueAndReturn = useCallback(() => {
+    setLoading(true)
     axios
       .get(`${API_URL}/${ISSUE_AND_RETURN}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
         const issuesData = res.data;
+        setLoading(false)
         setIssues(issuesData);
       });
   }, [userInfo?.accessToken]);
@@ -109,7 +117,7 @@ const IssueAndReturn = () => {
 
   const handleDeleteEquipment = () => {
     axios
-      .delete(`${API_URL}/${EMPLOYEES_PATH}/${editRow._id}`, {
+      .delete(`${API_URL}/${ISSUE_AND_RETURN}/${editRow._id}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((response) => {
@@ -143,7 +151,7 @@ const IssueAndReturn = () => {
       <ThemeProvider theme={defaultMaterialTheme}>
         <MaterialTable
           title="Issue And Return"
-          columns={columns}
+          columns={loading? [] : columns}
           data={issues}
           components={{
             Toolbar: (props) => (
@@ -198,7 +206,13 @@ const IssueAndReturn = () => {
             {
               icon: "add_circle",
               isFreeAction: true,
-              onClick: () => {
+              onClick: (event, rowData) => {
+                setIsEdit(false);
+                setEditRow({
+                  rowData,
+                  employees: availableEmployees,
+                  equipments: availableEquipments
+                });
                 setShowEquipmentModal(true);
               },
             },
@@ -227,7 +241,7 @@ const IssueAndReturn = () => {
       <Confirmation
         openModal={showConfirmModal}
         header={"Are you sure to delete this item?"}
-        content={`Delete Item ${editRow?.name}`}
+        content={`Delete Item ${editRow?._id}`}
         handleOK={handleDeleteEquipment}
         handleCloseModal={() => setShowConfirmModal(false)}
       />

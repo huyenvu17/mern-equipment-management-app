@@ -44,7 +44,7 @@ router.delete("/:id", verify, async (req, res) => {
 // GET ALL
 router.get("/", verify, async (req, res) => {
   const query = req.query.new;
-  if (req.user.isAdmin) {
+  if (req?.user?.isAdmin) {
     try {
       const users = query
         ? await Employee.find().limit(10)

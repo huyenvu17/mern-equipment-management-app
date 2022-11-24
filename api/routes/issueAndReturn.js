@@ -5,17 +5,17 @@ const verify = require("../utils/verifyToken");
 // GET ALL
 router.get("/", verify, async (req, res) => {
     IssueAndReturn.find()
-    .then((equipments) => res.json(equipments))
-    .catch((error) => res.status(400).json("Error:" + error));
+    .then((equipments) => {return res.json(equipments)})
+    .catch((error) => {return res.status(400).json("Error:" + error)});
 });
 
 // GET ONE
 router.get("/:id", async (req, res) => {
   try {
     const equipment = await IssueAndReturn.findById(req.params.id);
-    res.status(200).json(equipment);
+    return res.status(200).json(equipment)
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error)
   }
 });
 

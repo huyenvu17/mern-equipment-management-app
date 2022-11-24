@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) => {
-  console.log("editRow",editRow)
+  console.log("isEdit",isEdit)
   const {rowData, employees, equipments} = editRow
   const theme = useTheme();
   const userInfo = JSON.parse(getStoredItem(USER));
@@ -77,7 +77,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
       borrowDate: selectedBorrowDate,
       returnDate: selectedReturnDate,
       status: issueStatus,
-      equipment: selectedEquipments?.map(equipment => equipment?.id),
+      equipment: equipments?.map(equipment => selectedEquipments?.includes(equipment?.name)),
       employee: employees?.find(employee => employee?.email === selectedEmployee)
     };
     console.log("savedIssue",savedIssue)
@@ -94,7 +94,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               message: "Issue updated successfully!",
               type: "success",
             });
-            window.location.reload();
+            //window.location.reload();
             handleReloadData(true);
           }
         })
@@ -106,13 +106,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               message: "You are not allowed to update Issue!",
               type: "error",
             });
-          } else {
-            setShowNoti({
-              open: true,
-              message: "Cannot update Issue. Please check again!",
-              type: "error",
-            });
-          }
+          } 
         });
     } else {
       axios
@@ -157,11 +151,11 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
             <Box my={3} minWidth="100%">
               <Typography variant="subtitle1">Equipment</Typography>
               <Controller
+                key="equipments"
                 control={control}
                 name="equipments"
                 render={({ field, fieldState: { error } }) => (
                   <Select
-                    key={field}
                     labelId="demo-multiple-chip-label"
                     id="demo-multiple-chip"
                     multiple
@@ -179,7 +173,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                   >
                     {equipments?.map((equipment) => (
                       <MenuItem
-                        key={equipment?.id}
+                        key={equipment?._id}
                         value={equipment?.name}
                         style={getStyles(equipment?.name, equipments, theme)}
                       >
@@ -203,7 +197,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
                     onChange={(event) => setSelectedEmployee(event.target.value)}  
                   >
                     {employees?.map((item) => (
-                      <MenuItem key={item?.id} value={item?.email}>
+                      <MenuItem key={item?._id} value={item?.email}>
                         {item?.email}
                       </MenuItem>
                     ))}
@@ -215,7 +209,7 @@ const IssueAndReturnForm = ({ setShowNoti, isEdit, editRow, handleReloadData }) 
               <Controller
                 control={control}
                 name="borrowDate"
-                defaultValue={isEdit ? rowData?.borrowDate : ""}
+                //defaultValue={isEdit ? rowData?.borrowDate : ""}
                 render={({ field }) => (
                   <TextField
                     {...field}

@@ -38,7 +38,7 @@ const Employees = () => {
       width: "50%",
     },
     {
-      title: "NAMW",
+      title: "NAME",
       field: "name",
       width: "50%",
     },
@@ -184,6 +184,7 @@ const Employees = () => {
               icon: "add_circle",
               isFreeAction: true,
               onClick: () => {
+                setIsEdit(false);
                 setShowEquipmentModal(true);
               },
             },

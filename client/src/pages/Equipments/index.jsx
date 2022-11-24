@@ -69,7 +69,6 @@ const Equipments = () => {
   }, [fetchEquipments]);
 
   const handleDeleteEquipment = () => {
-    console.log();
     axios
       .delete(`${API_URL}/${EQUIPMENTS_PATH}/${editRow._id}`, {
         headers: setAuthHeader(userInfo?.accessToken),
@@ -159,6 +158,7 @@ const Equipments = () => {
               icon: "add_circle",
               isFreeAction: true,
               onClick: () => {
+                setIsEdit(false);
                 setShowEquipmentModal(true);
               },
             },

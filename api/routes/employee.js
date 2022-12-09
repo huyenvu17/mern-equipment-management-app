@@ -18,12 +18,12 @@ router.put("/:id", verify, async (req, res) => {
         { $set: req.body },
         { new: true }
       );
-      res.status(200).json(updatedEmployee);
+      return res.status(200).json(updatedEmployee);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed to update employee!");
+    return res.status(403).json("You are not allowed to update employee!");
   }
 });
 
@@ -32,12 +32,12 @@ router.delete("/:id", verify, async (req, res) => {
   if (req.user.id === req.params.id || req.user.isAdmin) {
     try {
       const deletedEmployee = await Employee.findByIdAndDelete(req.params.id);
-      res.status(200).json(deletedEmployee);
+      return res.status(200).json(deletedEmployee);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed to delete employee!");
+    return res.status(403).json("You are not allowed to delete employee!");
   }
 });
 
@@ -49,12 +49,12 @@ router.get("/", verify, async (req, res) => {
       const users = query
         ? await Employee.find().limit(10)
         : await Employee.find();
-      res.status(200).json(users);
+      return res.status(200).json(users);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed to view employees!");
+    return res.status(403).json("You are not allowed to view employees!");
   }
 });
 
@@ -62,9 +62,9 @@ router.get("/", verify, async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id);
-    res.status(200).json(employee);
+    return res.status(200).json(employee);
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 });
 

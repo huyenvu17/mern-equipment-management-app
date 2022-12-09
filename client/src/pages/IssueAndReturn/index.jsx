@@ -33,7 +33,7 @@ const IssueAndReturn = () => {
   const [issues, setIssues] = useState([]);
   const [availableEquipments, setAvailableEquipments] = useState([]);
   const [availableEmployees, setAvailableEmployees] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   let columns = [
     {
@@ -41,26 +41,43 @@ const IssueAndReturn = () => {
       width: "50%",
       field: "equipment",
       render: (row) => {
-        return <div>{row?.equipment && availableEquipments?.filter(equipment => row?.equipment?.includes(equipment?._id))?.map(item => item?.name)}</div>
+        return (
+          <div>
+            {row?.equipment &&
+              availableEquipments
+                ?.filter((equipment) =>
+                  row?.equipment?.includes(equipment?._id)
+                )
+                ?.map((item) => item?.name)}
+          </div>
+        );
       },
     },
     {
       title: "EMPLOYEE",
       width: "50%",
-      render: (row) => <div>{row?.employee && availableEmployees?.find(employee => employee?._id === row?.employee)?.email}</div>,
-
+      render: (row) => (
+        <div>
+          {row?.employee &&
+            availableEmployees?.find(
+              (employee) => employee?._id === row?.employee
+            )?.email}
+        </div>
+      ),
     },
     {
       title: "BORROW DATE",
       width: "50%",
-      render: (row) => <div>{moment(row?.borrowDate).format("DD/MM/YYYY")}</div>,
-
+      render: (row) => (
+        <div>{moment(row?.borrowDate).format("DD/MM/YYYY")}</div>
+      ),
     },
     {
       title: "RETURN DATE",
       width: "50%",
-      render: (row) => <div>{moment(row?.returnedDate).format("DD/MM/YYYY")}</div>,
-
+      render: (row) => (
+        <div>{moment(row?.returnedDate).format("DD/MM/YYYY")}</div>
+      ),
     },
     {
       title: "STATUS",
@@ -68,46 +85,44 @@ const IssueAndReturn = () => {
       width: "50%",
     },
   ];
-  
+
   const fetchEquipments = useCallback(() => {
-    setLoading(true)
+    setLoading(true);
     axios
       .get(`${API_URL}/${EQUIPMENTS_PATH}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
         setAvailableEquipments(res?.data);
-        setLoading(false)
+        setLoading(false);
       });
   }, [userInfo?.accessToken]);
 
   const fetchEmployees = useCallback(() => {
-    setLoading(true)
+    setLoading(true);
     axios
-      .get(`${API_URL}/${EMPLOYEES_PATH}`,{
+      .get(`${API_URL}/${EMPLOYEES_PATH}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
         const employeesData = res.data;
         setAvailableEmployees(employeesData);
-        setLoading(false)
+        setLoading(false);
       });
   }, [userInfo?.accessToken]);
 
   const fetchIssueAndReturn = useCallback(() => {
-    setLoading(true)
+    setLoading(true);
     axios
       .get(`${API_URL}/${ISSUE_AND_RETURN}`, {
         headers: setAuthHeader(userInfo?.accessToken),
       })
       .then((res) => {
         const issuesData = res.data;
-        setLoading(false)
+        setLoading(false);
         setIssues(issuesData);
       });
   }, [userInfo?.accessToken]);
-
-
 
   useEffect(() => {
     fetchEquipments();
@@ -151,7 +166,7 @@ const IssueAndReturn = () => {
       <ThemeProvider theme={defaultMaterialTheme}>
         <MaterialTable
           title="Issue And Return"
-          columns={loading? [] : columns}
+          columns={loading ? [] : columns}
           data={issues}
           components={{
             Toolbar: (props) => (
@@ -174,7 +189,7 @@ const IssueAndReturn = () => {
             Add: (props) => <Icon {...props}>add_circle</Icon>,
           }}
           options={{
-            //pageSize: 10,
+            search: true,
             showTitle: false,
             headerStyle: {
               borderBottomColor: "#6d01ed",
@@ -191,7 +206,7 @@ const IssueAndReturn = () => {
                 setEditRow({
                   rowData,
                   employees: availableEmployees,
-                  equipments: availableEquipments
+                  equipments: availableEquipments,
                 });
                 setShowEquipmentModal(true);
               },
@@ -211,7 +226,7 @@ const IssueAndReturn = () => {
                 setEditRow({
                   rowData,
                   employees: availableEmployees,
-                  equipments: availableEquipments
+                  equipments: availableEquipments,
                 });
                 setShowEquipmentModal(true);
               },

@@ -8,11 +8,7 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import {
-  API_URL,
-  EMPLOYEES_PATH,
-  USER,
-} from "../../utils/constants";
+import { API_URL, EMPLOYEES_PATH, USER } from "../../utils/constants";
 import { getStoredItem, setAuthHeader } from "../../utils/helper";
 import EmployeesForm from "./EmployeesForm";
 import ModalComponent from "../../components/Modal";
@@ -28,7 +24,7 @@ const Employees = () => {
   const [showNoti, setShowNoti] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [editRow, setEditRow] = useState({});
-  const [equipments,setEquipments] = useState([]);
+  const [equipments, setEquipments] = useState([]);
 
   let columns = [
     { title: "USERNAME", field: "username", width: "50%" },
@@ -154,7 +150,7 @@ const Employees = () => {
             Add: (props) => <Icon {...props}>add_circle</Icon>,
           }}
           options={{
-            //pageSize: 10,
+            search: true,
             showTitle: false,
             headerStyle: {
               borderBottomColor: "#6d01ed",

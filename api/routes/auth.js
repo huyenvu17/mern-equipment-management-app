@@ -35,7 +35,7 @@ router.post("/login", async (req, res) => {
     );
     const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 
-    if(originalPassword !== req.body.password){
+    if (originalPassword !== req.body.password) {
       return res.status(401).json("Wrong password or username!");
     }
 

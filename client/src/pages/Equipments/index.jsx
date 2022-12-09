@@ -15,7 +15,6 @@ import ModalComponent from "../../components/Modal";
 import Notification from "../../components/Notification";
 import Confirmation from "../../components/Confirmation";
 
-
 const Equipments = () => {
   const userInfo = JSON.parse(getStoredItem(USER));
   const [user, setUser] = useState([]);
@@ -128,7 +127,7 @@ const Equipments = () => {
             Add: (props) => <Icon {...props}>add_circle</Icon>,
           }}
           options={{
-            //pageSize: 10,
+            search: true,
             showTitle: false,
             headerStyle: {
               borderBottomColor: "#6d01ed",

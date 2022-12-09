@@ -4,51 +4,56 @@ const verify = require("../utils/verifyToken");
 
 // GET ALL
 router.get("/", verify, async (req, res) => {
-    IssueAndReturn.find()
-    .then((equipments) => {return res.json(equipments)})
-    .catch((error) => {return res.status(400).json("Error:" + error)});
+  IssueAndReturn.find()
+    .then((equipments) => {
+      return res.json(equipments);
+    })
+    .catch((error) => {
+      return res.status(400).json("Error:" + error);
+    });
 });
 
 // GET ONE
 router.get("/:id", async (req, res) => {
   try {
     const equipment = await IssueAndReturn.findById(req.params.id);
-    return res.status(200).json(equipment)
+    return res.status(200).json(equipment);
   } catch (error) {
-    return res.status(500).json(error)
+    return res.status(500).json(error);
   }
 });
 
 // CREATE
 router.post("/", verify, async (req, res) => {
-  if (req.user.isAdmin) {
+  console.log("req.user", req.user);
+  if (req?.user?.isAdmin) {
     const newIssueEvent = new IssueAndReturn(req.body);
     try {
       const savedIssueEvent = await newIssueEvent.save();
-      res.status(201).json(savedIssueEvent);
+      return res.status(201).json(savedIssueEvent);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed!");
+    return res.status(403).json("You are not allowed!");
   }
 });
 
 // UPDATE
 router.put("/:id", verify, async (req, res) => {
-  if (req.user.isAdmin) {
+  if (req?.user?.isAdmin) {
     try {
       const updatedIssueEvent = await IssueAndReturn.findByIdAndUpdate(
         req.params.id,
         { $set: req.body },
         { new: true }
       );
-      res.status(200).json(updatedIssueEvent);
+      return res.status(200).json(updatedIssueEvent);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed!");
+    return res.status(403).json("You are not allowed!");
   }
 });
 
@@ -56,13 +61,15 @@ router.put("/:id", verify, async (req, res) => {
 router.delete("/:id", verify, async (req, res) => {
   if (req.user.isAdmin) {
     try {
-      const deletedIssueEvent = await IssueAndReturn.findByIdAndDelete(req.params.id);
-      res.status(201).json(deletedIssueEvent);
+      const deletedIssueEvent = await IssueAndReturn.findByIdAndDelete(
+        req.params.id
+      );
+      return res.status(201).json(deletedIssueEvent);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed!");
+    return res.status(403).json("You are not allowed!");
   }
 });
 

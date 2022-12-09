@@ -43,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
 const Login = () => {
   const authToken = getAuthToken();
   const classes = useStyles();
-  const navigate = useNavigate();
   const [showNoti, setShowNoti] = useState({});
   const myHelper = {
     email: {
@@ -66,11 +65,8 @@ const Login = () => {
             message: "Login Successfully",
             type: "success",
           });
-          setTimeout(() => {
-            setStoredItem(AUTH_TOKEN, result?.data?.accessToken);
-            setStoredItem(USER, JSON.stringify(result?.data));
-            navigate("/");
-          }, 1500);
+          setStoredItem(AUTH_TOKEN, result?.data?.accessToken);
+          setStoredItem(USER, JSON.stringify(result?.data));
         }
       })
       .catch((error) => {

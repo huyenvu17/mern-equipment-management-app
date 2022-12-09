@@ -5,8 +5,12 @@ const verify = require("../utils/verifyToken");
 // GET ALL
 router.get("/", verify, async (req, res) => {
   Equipment.find()
-    .then((equipments) => res.json(equipments))
-    .catch((error) => res.status(400).json("Error:" + error));
+    .then((equipments) => {
+      return res.json(equipments);
+    })
+    .catch((error) => {
+      return res.status(400).json("Error:" + error);
+    });
 });
 
 // GET ONE
@@ -43,12 +47,12 @@ router.put("/:id", verify, async (req, res) => {
         { $set: req.body },
         { new: true }
       );
-      res.status(200).json(updatedEquipment);
+      return res.status(200).json(updatedEquipment);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed!");
+    return res.status(403).json("You are not allowed!");
   }
 });
 
@@ -57,12 +61,12 @@ router.delete("/:id", verify, async (req, res) => {
   if (req.user.isAdmin) {
     try {
       const deletedEquipment = await Equipment.findByIdAndDelete(req.params.id);
-      res.status(201).json(deletedEquipment);
+      return res.status(201).json(deletedEquipment);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   } else {
-    res.status(403).json("You are not allowed!");
+    return res.status(403).json("You are not allowed!");
   }
 });
 
